@@ -199,4 +199,37 @@ Simply click the link or open your browser to `http://localhost:5173/`. You'll s
 
 ## Common Issues & Solutions
 
-Please check the orgin Eliza's [Common Issues & Solutions](https://elizaos.github.io/eliza/docs/quickstart/#common-issues--solutions)
+### Build Dependency Errors in Monorepos
+
+When building packages in this monorepo, you might encounter TypeScript declaration (DTS) build errors like this:
+
+```
+@elizaos-plugins/plugin-flow-template:build: Error: error occurred in dts build
+@elizaos-plugins/plugin-flow-template:build: DTS Build error
+```
+
+This typically happens because packages depend on each other and need to be built in a specific order. If you encounter this error, try building the dependencies manually in this order:
+
+1. First, build the core package:
+   ```bash
+   pnpm run build --filter="@elizaos/core"
+   ```
+
+2. Then build the plugin-di package:
+   ```bash
+   pnpm run build --filter="@elizaos-plugins/plugin-di"
+   ```
+
+3. Next, build any intermediate packages like plugin-flow:
+   ```bash
+   pnpm run build --filter="@elizaos-plugins/plugin-flow"
+   ```
+
+4. Finally, build the package that was throwing the error:
+   ```bash
+   pnpm run build --filter="@elizaos-plugins/plugin-flow-template"
+   ```
+
+This manual build order ensures that all dependencies are properly built before dependent packages try to use them.
+
+Please also check the origin Eliza's [Common Issues & Solutions](https://elizaos.github.io/eliza/docs/quickstart/#common-issues--solutions)
